@@ -1,7 +1,7 @@
 /**
  * 
  */
-var map;
+var world_map;
 function initialize() {
 
 	/* I have obtained world countries borders and merged it into my own
@@ -24,15 +24,18 @@ function initialize() {
 	/* All countries whose military status are banned by constitution are colored by grey*/
 	var colorOfMilTrialsUnknown = '#999999';
 	
+	var initial_center = new google.maps.LatLng(0, 0);
+	var intial_zoom_level = 2;
+	
 	/* Initial Map properties */
 	var mapOptions = {
-			center : new google.maps.LatLng(30.058056, 31.228889),
-			zoom : 3,
+			center 	 : initial_center,
+			zoom 	 : intial_zoom_level,
 			mapTypeId: google.maps.MapTypeId.ROADMAP  
 	};
 
 	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
-	map = new google.maps.Map(document.getElementById("map-canvas"),
+	world_map = new google.maps.Map(document.getElementById("map-canvas"),
 			mapOptions);
 
 	/* For all world countries, get their borders from the fusion table through fusion table query.
@@ -44,15 +47,11 @@ function initialize() {
 		},
 		styles: [{
 			polygonOptions: {
+				/* By default consider any country military court state as unknown. Otherwise it will meet any of the following conditions. */
 				fillColor: colorOfMilTrialsUnknown,
 				fillOpacity: 0.5
 			}
-		}, /*{
-			where: 'Military_Courts_State = \'Unknown\'',
-			polygonOptions: {
-				fillColor: colorOfMilTrialsUnknown
-			}
-		},*/{
+		}, {
 			where: 'Military_Courts_State = \'PermittedByConst\'',
 			polygonOptions: {
 				fillColor: colorOfMilTrialsPermByConst,
@@ -78,7 +77,7 @@ function initialize() {
 	});
 	
 	/* Draw fusion table layer over given map. */
-	fusionTableLayer.setMap(map);
+	fusionTableLayer.setMap(world_map);
 }
 
 function loadScript() {
