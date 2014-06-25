@@ -15,6 +15,12 @@ var fusionTableID = "1Ghp2CN2txWCxVMNEBr9Q-mufpstJ68dNRGG_qLGR";
  * issues, most countries' borders are not precise. */
 var borderColumnName = "Border";
 
+/* Geocoding is the process of converting addresses (like "1600 Amphitheatre Parkway, Mountain View, CA") into geographic coordinates (like latitude 37.423021 and longitude -122.083739),
+ * which you can use to place markers or position the map.
+ * It will convert given country name into geographic coordinate so that map can be centered at appropriately.
+ */
+var geocoder;
+
 function initialize() {
 
 	/* All countries whose military status are permitted by constitution are colored by red*/
@@ -83,17 +89,20 @@ function initialize() {
 
 	/* Draw fusion table layer over given map. */
 	fusionTableLayer.setMap(world_map);
+	
+	/* Initialize geocoder object */
+	geocoder = new google.maps.Geocoder();
 }
 
 function showSelectedCountry() {
 
 	console.log("Inside highlightCountry function");
 	var whereClause;
-	var searchString = document.getElementById('search-string_0').value.replace(/'/g, "\\'");
-	console.log("searchString var is: %s", searchString);
+	var selectedCountryName = document.getElementById('search-string_0').value.replace(/'/g, "\\'");
+	console.log("selectedCountryName var is: %s", selectedCountryName);
 
-	if (searchString != '--Select--') {
-		whereClause = "Name CONTAINS IGNORING CASE \'"+ searchString+"\'";
+	if (selectedCountryName != '--Select--') {
+		whereClause = "Name CONTAINS IGNORING CASE \'"+ selectedCountryName+"\'";
 		console.log("whereClause var is: %s", whereClause);
 	}
 
@@ -108,6 +117,24 @@ function showSelectedCountry() {
 
 	});
 
+	/* Accessing the Geocoding service is asynchronous, since the Google Maps API needs to make a call to an external server.
+	 * For that reason, you need to pass a call-back method to execute upon completion of the request. 
+	 * This call-back method processes the result(s).
+	 */
+	geocoder.geocode( {'address' : selectedCountryName}, function(results, status) {
+		if (status == google.maps.GeocoderStatus.OK) {
+
+			/* Google centers a map but it does not zoom it. 
+			 * To zoom in appropriately, you should use map.fitBounds() method using LatLngBounds object returned by the geocoder.*/
+
+			/* geometry.location represents the geocoded latitude,longitude value. Note that this is LatLng object*/
+			/* Adjust center of the map as well as the zoom level. */
+			world_map.setCenter(results[0].geometry.location);
+			world_map.fitBounds(results[0].geometry.bounds);
+		} else {
+			alert("Geocode was not successful for the following reason: " + status);
+		}
+	});
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
