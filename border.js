@@ -80,19 +80,4 @@ function initialize() {
 	fusionTableLayer.setMap(world_map);
 }
 
-function loadScript() {
-
-	var script = document.createElement('script');
-	script.type = 'text/javascript';
-
-	/* instruct the Maps JavaScript API bootstrap to delay execution of your application code until 
-		the Maps JavaScript API code is fully loaded. You may do so using the callback parameter, which 
-		takes as an argument the function to execute upon completing loading the API. */
-	script.src = 'https://maps.googleapis.com/maps/api/js?v=3.exp'
-		+ '&callback=initialize'
-		+ '&language=ar';
-	document.body.appendChild(script);
-}
-
-/*  load the Maps API JavaScript code after your page has finished loading */
-window.onload = loadScript;
+google.maps.event.addDomListener(window, 'load', initialize);
