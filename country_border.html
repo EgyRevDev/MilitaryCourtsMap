@@ -29,8 +29,9 @@ body {
     <div style="margin-top: 10px;">
       <label class="layer-wizard-search-label">
         Country
-        <input type="text" id="search-string_0">
-        <input type="button" onclick="showSelectedCountry()" value="Search">
+        <input type="text" id="txtSearchStringID">
+        <input type="button" onclick="zoomToCountry()" value="Search">
+        <input type="reset"  onclick="resetMap()"      value="Reset">
       </label> 
     </div>
 	<div id="map-canvas"></div>
