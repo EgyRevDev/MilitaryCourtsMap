@@ -14,7 +14,7 @@ var geocoder;
 
 /* I have obtained world countries borders and merged it into my own
  * Military Country Map Fusion Table. This is the ID of my table. */
-var fusionTableID = "1GmDKjODut8v_IQyKgwV50SlB5K4mgl0AWZ8C5QPd";
+var fusionTableID = "1ZmxO6yDP5nonYLdIvx84qI1SXhxK2B32KvtANIrT";
 
 /* Name of the column in Military Country Map Fusion Table. This column
  * contains KML polygons of all world countries. Note that for performance 
@@ -32,12 +32,12 @@ function getDefaultMapOptions(){
 			zoom 	 : intial_zoom_level,
 			mapTypeId: google.maps.MapTypeId.ROADMAP  
 	};
-	
+
 	return mapOptions;
 }
 
 function getDefaultQuery(){
-	
+
 	/* All countries whose military status are permitted by constitution are colored by red*/
 	var colorOfMilTrialsPermByConst = '#FF0000';
 	/* All countries whose military status are banned by constitution are colored by green*/
@@ -84,16 +84,16 @@ function getDefaultQuery(){
 					fillColor: colorOfMilTrialsBanByLaw
 				}
 			}]
-		};
-	
+	};
+
 	return defaultQuery;
 }
 function initialize() {
 
 	var mapOptions = getDefaultMapOptions();
-	
+
 	var fusionTableQuery = getDefaultQuery();
-	
+
 	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
 	world_map = new google.maps.Map(document.getElementById("map-canvas"),
 			mapOptions);
@@ -104,16 +104,16 @@ function initialize() {
 
 	/* Draw fusion table layer over given map. */
 	fusionTableLayer.setMap(world_map);
-	
+
 	/* Initialize geocoder object */
 	geocoder = new google.maps.Geocoder();
-	
+
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	google.maps.event.addDomListener(window, 'keypress',function(e) {
-          if (e.keyCode == 13) {
-        	  zoomToCountry();
-          }
-        });
+		if (e.keyCode == 13) {
+			zoomToCountry();
+		}
+	});
 }
 
 /* This function is called once user clicks on Search button. */
@@ -124,20 +124,18 @@ function zoomToCountry() {
 	var countriesDropDownObject = document.getElementById('countriesDropDownListID');
 	var selectedCountryName =  countriesDropDownObject.options[countriesDropDownObject.selectedIndex].text;
 	console.log("Before replacement: selectedCountryName var is: %s", selectedCountryName);
-	
+
 	selectedCountryName = selectedCountryName.replace(/'/g, "\\'");
 	console.log("After replacement: selectedCountryName var is: %s", selectedCountryName);
 
 	/* Handle corner case if user did not enter any country name and hits search button, by simply reseting the map.
 	 * Otherwise, geocode required country name. */
-	if(/*isEmpty(selectedCountryName)*/selectedCountryName == '--Select Country--'){
+	if(selectedCountryName == '--Select Country--'){
 		resetMap();
 	}else{
 
-		/*if (selectedCountryName != '--Select Country--') {*/
-			whereClause = "Name CONTAINS IGNORING CASE \'"+ selectedCountryName+"\'";
-			console.log("whereClause var is: %s", whereClause);
-		/*}*/
+		whereClause = "Name = \'"+ selectedCountryName+"\'";
+		console.log("whereClause var is: %s", whereClause);
 
 		fusionTableLayer.setOptions({
 			query: {
@@ -175,12 +173,12 @@ function zoomToCountry() {
 function resetMap(){
 	var defaultQuery = getDefaultQuery();
 	var mapOptions = getDefaultMapOptions();
-	
+
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
 	fusionTableLayer.setOptions(defaultQuery);
 	world_map.setCenter(mapOptions.center);
 	world_map.setZoom(mapOptions.zoom);
-	
+
 	/* Reset text field if it holds any name of searched country. */
 	/*document.getElementById("txtSearchStringID").value = "";*/
 	document.getElementById("countriesDropDownListID").value = "--Select Country--";
