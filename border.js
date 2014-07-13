@@ -121,19 +121,23 @@ function zoomToCountry() {
 
 	console.log("Inside zoomToCountry function");
 	var whereClause;
-	var selectedCountryName = document.getElementById('txtSearchStringID').value.replace(/'/g, "\\'");
-	console.log("selectedCountryName var is: %s", selectedCountryName);
+	var countriesDropDownObject = document.getElementById('countriesDropDownListID');
+	var selectedCountryName =  countriesDropDownObject.options[countriesDropDownObject.selectedIndex].text;
+	console.log("Before replacement: selectedCountryName var is: %s", selectedCountryName);
+	
+	selectedCountryName = selectedCountryName.replace(/'/g, "\\'");
+	console.log("After replacement: selectedCountryName var is: %s", selectedCountryName);
 
 	/* Handle corner case if user did not enter any country name and hits search button, by simply reseting the map.
 	 * Otherwise, geocode required country name. */
-	if(isEmpty(selectedCountryName)){
+	if(/*isEmpty(selectedCountryName)*/selectedCountryName == '--Select Country--'){
 		resetMap();
 	}else{
 
-		if (selectedCountryName != '--Select--') {
+		/*if (selectedCountryName != '--Select Country--') {*/
 			whereClause = "Name CONTAINS IGNORING CASE \'"+ selectedCountryName+"\'";
 			console.log("whereClause var is: %s", whereClause);
-		}
+		/*}*/
 
 		fusionTableLayer.setOptions({
 			query: {
@@ -178,7 +182,8 @@ function resetMap(){
 	world_map.setZoom(mapOptions.zoom);
 	
 	/* Reset text field if it holds any name of searched country. */
-	document.getElementById("txtSearchStringID").value = "";
+	/*document.getElementById("txtSearchStringID").value = "";*/
+	document.getElementById("countriesDropDownListID").value = "--Select Country--";
 }
 
 function isEmpty(a_string){
