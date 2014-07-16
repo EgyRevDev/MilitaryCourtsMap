@@ -8,6 +8,8 @@ var world_map;
 function getDefaultMapOptions(){
 
 	var initial_center = new MQA.LatLng(0, 0);
+	
+	/*Valid zoom levels are 2 through 18*/
 	var intial_zoom_level = 2;
 
 	/* Initial Map properties */
@@ -28,19 +30,36 @@ function getDefaultQuery(){
 
 	return null;
 }
-function initialize() {
+function initializeMap() {
 
 	var mapOptions = getDefaultMapOptions();
 
 	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
 	world_map = new MQA.TileMap(mapOptions);
 
+    /*Controls are a way to encapsulate functionality on a map. Because these controls are not included in the base download of the API,
+     * you must first load and initialize the modules using MQA.withModule
+     */
+    MQA.withModule('largezoom', 'mousewheel', loadMapControls );
+    
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {
 			zoomToCountry();
 		}
 	});*/
+}
+
+function loadMapControls () {
+
+    // add the Large Zoom control
+    world_map.addControl(
+        new MQA.LargeZoom(),
+        new MQA.MapCornerPlacement(MQA.MapCorner.TOP_LEFT, new MQA.Size(5,5))
+    );
+
+    // enable zooming with your mouse
+    world_map.enableMouseWheelZoom();
 }
 
 /* This function is called once user clicks on Search button. */
@@ -83,4 +102,4 @@ function isEmpty(a_string){
 	return (0 == a_string.length);
 }
 
-MQA.EventUtil.observe(window, 'load', initialize);
+MQA.EventUtil.observe(window, 'load', initializeMap);
