@@ -30,6 +30,7 @@ function getDefaultQuery(){
 
 	return null;
 }
+
 function initializeMap() {
 
 	var mapOptions = getDefaultMapOptions();
@@ -40,7 +41,10 @@ function initializeMap() {
     /*Controls are a way to encapsulate functionality on a map. Because these controls are not included in the base download of the API,
      * you must first load and initialize the modules using MQA.withModule
      */
-    MQA.withModule('largezoom', 'mousewheel', loadMapControls );
+    MQA.withModule('largezoom', 'mousewheel', 'dotcomwindowmanager', 'remotecollection', 'kmldeserializer', loadModuleCallback );
+    
+    /*Add KML feeds into map*/
+    /*MQA.withModule('dotcomwindowmanager', 'remotecollection', 'kmldeserializer', loadRemoteKML);*/
     
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
@@ -48,6 +52,11 @@ function initializeMap() {
 			zoomToCountry();
 		}
 	});*/
+}
+
+function loadModuleCallback(){
+	loadMapControls ();
+	loadRemoteKML();
 }
 
 function loadMapControls () {
@@ -60,6 +69,30 @@ function loadMapControls () {
 
     // enable zooming with your mouse
     world_map.enableMouseWheelZoom();
+}
+
+function loadRemoteKML(){
+	
+	   /*Create a remote collection using kml url and kml deserializer that transforms data into shape */
+	   var kmlCollection = new MQA.RemoteCollection(
+	     'https://dl.dropboxusercontent.com/u/78944658/EgyptmergedFinalOptimizedSimplified.kml',
+	     new MQA.KMLDeserializer());
+	 
+	   /*Set a custom name for the collection*/
+	   kmlCollection.collectionName = 'egypt borders';
+	 
+	   /* Automatically zoom and center the map using the bestFit method after the collection has loaded */
+	   MQA.EventManager.addListener(kmlCollection, 'loaded', function() {
+	     world_map.bestFit();
+	   });
+	 
+	   /* Add the shape collection to the map */
+	   world_map.addShapeCollection(kmlCollection);
+	   
+}
+
+function eventRaised(evt) {
+	console.log("mouseover kml collection");
 }
 
 /* This function is called once user clicks on Search button. */
