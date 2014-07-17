@@ -7,20 +7,38 @@ var world_map;
 
 function getDefaultMapOptions(){
 
-	var initial_center = new MQA.LatLng(0, 0);
-	var intial_zoom_level = 2;
+	var initial_center = new L.latLng(0, 0);
+	var intial_zoom_level = 3;
 
 	/* Initial Map properties */
 	var mapOptions = {
-			
-			elt: document.getElementById('map-canvas'),     // ID of map element on page
-            zoom: intial_zoom_level,                        // initial zoom level of the map
-            latLng: initial_center,    						// center of map in latitude/longitude
-            mtype: 'map',                                    // map type (map, sat, hyb); defaults to 'map'
-            zoomOnDoubleClick: true                          // enable map to be zoomed in when double-clicking on map 
+            zoom: intial_zoom_level,
+            center: initial_center
 	};
 
 	return mapOptions;
+}
+
+function getTileOptions(){
+
+	var copyright = 'Imagery &copy; <a href="http://mapbox.com">Mapbox</a> , &copy; <a href="www.nomiltrials.com">للا للمحاكمات العسكرية للمدنيين</a>';
+	
+	var tileOptions= {
+	    attribution: copyright,
+	    maxZoom: 18
+	};
+	
+	return tileOptions;
+}
+
+function addTile(){
+	var map_id='wshowair.j04mg6fm';
+	var tile_url = 'http://{s}.tiles.mapbox.com/v3/' + 
+					map_id +
+					'/{z}/{x}/{y}.png';
+
+	var tileOptions = getTileOptions();
+	L.tileLayer(tile_url, tileOptions).addTo(world_map);
 }
 
 function getDefaultQuery(){
@@ -33,8 +51,10 @@ function initialize() {
 	var mapOptions = getDefaultMapOptions();
 
 	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
-	world_map = new MQA.TileMap(mapOptions);
-
+	world_map = new L.map("map-canvas",mapOptions);
+	
+	addTile();
+	
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {
@@ -71,7 +91,7 @@ function resetMap(){
 	var mapOptions = getDefaultMapOptions();
 
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
-	world_map.setCenter(mapOptions.latLng, mapOptions.zoom);
+	world_map.setView(mapOptions.center, mapOptions.zoom);
 
 	/* Reset text field if it holds any name of searched country. */
 	/*document.getElementById("txtSearchStringID").value = "";*/
@@ -83,4 +103,4 @@ function isEmpty(a_string){
 	return (0 == a_string.length);
 }
 
-MQA.EventUtil.observe(window, 'load', initialize);
+initialize();
