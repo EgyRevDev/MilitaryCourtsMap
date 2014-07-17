@@ -33,7 +33,7 @@ function getTileOptions(){
 
 function addTile(){
 	var map_id='wshowair.j04mg6fm';
-	var tile_url = 'http://{s}.tiles.mapbox.com/v3/' + 
+	var tile_url = 'https://{s}.tiles.mapbox.com/v3/' + 
 					map_id +
 					'/{z}/{x}/{y}.png';
 
