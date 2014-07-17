@@ -19,6 +19,22 @@ body {
 #map-canvas {
 	height: 100%
 }
+
+
+/* Replace colors in the image name to red, green or yellow to view other options.
+CSS classes associated for each:
+    -Zoom Control: .panControl, .sliderWrapper, .slider, .zoomin, .zoomout
+    -View/Traffic Control: .maptoggle, .maptoggle span
+    -Inset Map Control: .min, .min:hover, .max, .max:hover */
+
+.panControl, .sliderWrapper, .slider, .zoomin, .zoomout, .maptoggle, .maptoggle span {
+    background-image: url('http://developer.mapquest.com/content/documentation/common/images/sprite_map_controls_blue.png') !important;
+}
+
+.min, .min:hover, .max, .max:hover {
+    background-image: url('http://developer.mapquest.com/content/documentation/common/images/min_max_blue.png') !important;
+}
+
 </style>
 <script type="text/javascript"
 	src="http://open.mapquestapi.com/sdk/js/v7.1.0/mqa.toolkit.js?key=Fmjtd%7Cluur20uznd%2C7n%3Do5-9ay09a">
