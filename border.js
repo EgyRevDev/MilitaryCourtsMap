@@ -69,6 +69,20 @@ function initialize() {
 	    	        });
 	    })
 	    .addTo(world_map);
+	
+	/* I have opened related issue on leaflet-omnivore:
+	 * https://github.com/mapbox/leaflet-omnivore/issues/40
+	 */
+		world_map.on("popupopen", function(evt){
+			console.log("popup is opened");
+			currentPopup = evt.popup;
+			});
+	
+		world_map.on("popupclose", function(evt){
+			console.log("popup is closed");
+			currentPopup = null;
+			});
+	
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {
