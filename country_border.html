@@ -21,12 +21,17 @@ body {
 }
 </style>
 
-s<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+
+    <!-- use these cartodb.css links if you are using https -->
+    <link rel="stylesheet" href="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/themes/css/cartodb.css" />
+
+    <!-- use this cartodb.js link if you are using https -->
+    <script src="https://cartodb-libs.global.ssl.fastly.net/cartodb.js/v3/cartodb.js"></script>
 </head>
 
 <body>
-	<div style="margin-top: 10px;">
-		<label class="layer-wizard-search-label"> <!-- Country --> <!-- <input type="text" id="txtSearchStringID"> -->
+<!-- 	<div style="margin-top: 10px;">
+		<label class="layer-wizard-search-label"> Country <input type="text" id="txtSearchStringID">
 			<select id="countriesDropDownListID" onchange="zoomToCountry()">
 				<option value="--Select Country--">--Select Country--</option>
 				<option value="Afghanistan">Afghanistan</option>
@@ -224,12 +229,11 @@ s<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7
 				<option value="Zambia">Zambia</option>
 				<option value="Zimbabwe">Zimbabwe</option>
 		</select>
-			<!-- <input type="button" onclick="zoomToCountry()" value="Search"> -->
+			<input type="button" onclick="zoomToCountry()" value="Search">
 		<input type="reset" onclick="resetMap()" value="Reset"> </label>
-	</div>
+	</div> -->
 
 	<div id="map-canvas"></div>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	<script type="text/javascript" src="border.js"></script>
 </body>
 </html>

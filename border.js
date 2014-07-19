@@ -41,6 +41,12 @@ function addTile(){
 	L.tileLayer(tile_url, tileOptions).addTo(world_map);
 }
 
+function addCartDBLayer(){
+	/* add the cartodb layer. You can get this url by click Share -> API */
+	
+	var layerUrl = 'http://wshowair.cartodb.com/api/v2/viz/47340f94-0f7d-11e4-a85e-0e73339ffa50/viz.json';
+	cartodb.createLayer(world_map, layerUrl).addTo(world_map);
+}
 function getDefaultQuery(){
 
 
@@ -55,6 +61,7 @@ function initialize() {
 	
 	addTile();
 	
+	addCartDBLayer();
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {
@@ -103,4 +110,4 @@ function isEmpty(a_string){
 	return (0 == a_string.length);
 }
 
-initialize();
+window.onload = initialize;
