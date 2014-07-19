@@ -50,11 +50,12 @@ function initialize() {
 
 	var mapOptions = getDefaultMapOptions();
 
-	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
-	world_map = new L.map("map-canvas",mapOptions);
-	
-	addTile();
-	
+	world_map = L.mapbox.map('map-canvas', 'wshowair.j04mg6fm');
+	var runLayer = omnivore.kml('https://dl.dropboxusercontent.com/u/78944658/EgyptmergedFinalOptimizedSimplified.kml')
+	    .on('ready', function() {
+	    	world_map.fitBounds(runLayer.getBounds());
+	    })
+	    .addTo(world_map);
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {

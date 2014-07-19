@@ -21,7 +21,9 @@ body {
 }
 </style>
 
-s<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+<link rel='stylesheet' href='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.css' />
+<script src='https://api.tiles.mapbox.com/mapbox.js/v1.6.4/mapbox.js'></script>
+<script src='https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
 </head>
 
 <body>
@@ -227,9 +229,7 @@ s<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7
 			<!-- <input type="button" onclick="zoomToCountry()" value="Search"> -->
 		<input type="reset" onclick="resetMap()" value="Reset"> </label>
 	</div>
-
 	<div id="map-canvas"></div>
-	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
 	<script type="text/javascript" src="border.js"></script>
 </body>
 </html>
