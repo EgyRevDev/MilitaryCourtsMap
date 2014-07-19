@@ -51,9 +51,22 @@ function initialize() {
 	var mapOptions = getDefaultMapOptions();
 
 	world_map = L.mapbox.map('map-canvas', 'wshowair.j04mg6fm');
+	
+	/*omnivore will AJAX-request this file behind the scenes and parse it:
+	 * Note that there are considerations:
+	 * - The file must either be on the same domain as the page that requests it, OR ,
+	 * both the server it is requested from and the user's browser must support CORS.*/
 	var runLayer = omnivore.kml('https://dl.dropboxusercontent.com/u/78944658/EgyptmergedFinalOptimizedSimplified.kml')
 	    .on('ready', function() {
 	    	world_map.fitBounds(runLayer.getBounds());
+	    	
+	    	/*After the 'ready' event fires, the GeoJSON contents are accessible and you can iterate through layers to bind custom popups.*/
+	    	        runLayer.eachLayer(function(layer) {
+	    	            /*See the `.bindPopup` documentation for full details. 
+	    	             * This dataset has a property called `name`: your dataset might not,
+	    	             * so inspect it and customize to taste.*/
+	    	            layer.bindPopup(layer.feature.properties.description);
+	    	        });
 	    })
 	    .addTo(world_map);
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
