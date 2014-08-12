@@ -170,13 +170,17 @@ function resetHighlight(e) {
 	geojsonLayer.resetStyle(e.target);
 }
 
-
+/* Zoom to country upon being clicked on any part of its borders. */
+function zoomToFeature(e) {
+	world_map.fitBounds(e.target.getBounds());
+}
 
 /* Tell Leaflet what functions to call when mousing over and out of a country */
 function setEvents(feature, layer) {
 	layer.on({
 		mouseover	: highlightFeature,
-		mouseout	: resetHighlight
+		mouseout	: resetHighlight,
+		click		: zoomToFeature	
 	});
 }
 
