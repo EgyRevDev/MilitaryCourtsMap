@@ -59,9 +59,32 @@ function addGeoJsonLayer(){
 	}).addTo(world_map);
 }
 
+function onAddLegend() {
 
+	var div = L.DomUtil.create('div', 'legend'),
+	militaryCourtsStatus = ['PermittedByConst', 'PermittedByLaw', 'BannedByLaw', 'BannedByConst', "Unkwon", "Default"],
+	legendTxt = ["Permitted by Constitution", "Permitted by Law", "Banned by Law", "Banned by Constitution", "Unkown State" , "Non-UN Countries"],
+	labels = [],
+	state;
 
+	for (var i = 0; i < militaryCourtsStatus.length; i++) {
+		state = militaryCourtsStatus[i];
 
+		labels.push(
+				'<i style="background:' + getBaseColor(state) + '"></i> ' +
+				legendTxt[i] );
+	}
+
+	div.innerHTML = labels.join('<br><br>');
+	return div;
+}
+function addLegendControl(){
+	var legend = L.control({position: 'bottomleft'});
+
+	legend.onAdd = onAddLegend;
+
+	legend.addTo(world_map);
+}
 
 function getBaseColor(milstatus){
 	var geoJsonGeometryColor;
@@ -197,6 +220,7 @@ function initialize() {
 
 	addGeoJsonLayer();
 	
+	addLegendControl();
 	
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
