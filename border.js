@@ -12,7 +12,9 @@ function getDefaultMapOptions(){
 	/* Initial Map properties */
 	var mapOptions = {
 			zoom: intial_zoom_level,
-			center: initial_center
+			center: initial_center,
+			minZoom: 2,
+			maxZoom: 7
 	};
 
 	return mapOptions;
@@ -24,7 +26,8 @@ function getTileOptions(){
 
 	var tileOptions= {
 			attribution: copyright,
-			minZoom: 2
+			minZoom: 2,
+			maxZoom: 7
 	};
 
 	return tileOptions;
