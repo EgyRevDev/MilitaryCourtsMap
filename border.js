@@ -3,6 +3,7 @@
  */
 
 var world_map;
+var mygeojsonLayer;
 
 function getDefaultMapOptions(){
 
@@ -53,10 +54,10 @@ function addGeoJsonLayer(){
 	
 	/* Features in GeoJSON contain a geometry object and additional properties.
 	 * Add vector data to map */
-	geojsonLayer = L.geoJson(worldborders, {
+	mygeojsonLayer = L.geoJson(worldborders, {
 		style: getBaseStyle,
 		onEachFeature: setEvents
-	}).addTo(world_map);
+	})/*.addTo(world_map)*/; /* Here I managed to prove that the geojson layer wasn't added to the map but it was shown due to being referenced from leaflet-search plugin by adding search control below.*/
 }
 
 function onAddLegend() {
@@ -84,6 +85,36 @@ function addLegendControl(){
 	legend.onAdd = onAddLegend;
 
 	legend.addTo(world_map);
+}
+
+function addSearchControl(){
+
+	var searchControl = new L.Control.Search({/*wrapper: 'findbox',*/ layer: mygeojsonLayer, propertyName: 'name', circleLocation:false /*, collapsed: false*/});
+
+	searchControl.on('search_locationfound', function(e) {
+		console.log(e.layer.feature);
+		
+		
+		world_map.fitBounds(e.layer.getBounds());
+
+		/*var countryGeoJsonDynLayer = L.geoJson();
+		countryGeoJsonDynLayer.addData(e.layer.feature);
+		countryGeoJsonDynLayer.setStyle(getBaseStyle(e.layer.feature));
+		
+		world_map.addLayer(countryGeoJsonDynLayer);*/
+		//world_map.removeLayer(mygeojsonLayer);	
+		/*if(e.layer._popup)
+			e.layer.openPopup();*/
+
+	})/*.on('search_collapsed', function(e) {
+
+		mygeojsonLayer.eachLayer(function(layer) {	//restore feature color
+			console.log("search collapsed");
+		});	
+	})*/;
+	
+	world_map.addControl( searchControl );
+	
 }
 
 function getBaseColor(milstatus){
@@ -173,14 +204,14 @@ function highlightFeature(e) {
 
 	/*var countryName = e.target.feature.properties.name;
 	console.log(countryName);*/
-	var layer = e.target;
+	var layer = (typeof e.target.feature === 'undefined'? e.layer: e.target);
 	layer.setStyle({
 		color: '#FFFFFF',
 		weight: 1,
 		opacity: 1,
 		/*dashArray: '3',*/
 		fillOpacity: 0.7,
-		fillColor: getHighlightColor(e.target.feature.properties.milstatus)
+		fillColor: getHighlightColor(layer.feature.properties.milstatus)
 	});
 	
 	if (!L.Browser.ie && !L.Browser.opera) {
@@ -190,7 +221,7 @@ function highlightFeature(e) {
 
 /* A function to reset the colors when a country is not longer 'hovered' */
 function resetHighlight(e) {
-	geojsonLayer.resetStyle(e.target);
+	mygeojsonLayer.resetStyle(e.target);
 }
 
 /* Zoom to country upon being clicked on any part of its borders. */
@@ -220,7 +251,9 @@ function initialize() {
 
 	addGeoJsonLayer();
 	
-	addLegendControl();
+	/*addLegendControl();*/
+	
+	addSearchControl();
 	
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
