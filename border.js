@@ -2,7 +2,10 @@
  * 
  */
 
-var world_map;
+var g_worldMap;
+var g_geoJsonLayer;
+var g_minZoomLevel = 2;
+var g_maz_zoomLevel = 7;
 
 function getDefaultMapOptions(){
 
@@ -11,10 +14,10 @@ function getDefaultMapOptions(){
 
 	/* Initial Map properties */
 	var mapOptions = {
-			zoom: intial_zoom_level,
-			center: initial_center,
-			minZoom: 2,
-			maxZoom: 7
+			zoom	: intial_zoom_level,
+			center	: initial_center,
+			minZoom	: g_minZoomLevel,
+			maxZoom	: g_maz_zoomLevel
 	};
 
 	return mapOptions;
@@ -26,8 +29,8 @@ function getTileOptions(){
 
 	var tileOptions= {
 			attribution: copyright,
-			minZoom: 2,
-			maxZoom: 7
+			minZoom: g_minZoomLevel,
+			maxZoom: g_maz_zoomLevel
 	};
 
 	return tileOptions;
@@ -42,7 +45,7 @@ function addTileLayer(){
 	var tileOptions = getTileOptions();
 	var tileLayer = L.tileLayer(tile_url, tileOptions);
 
-	tileLayer.addTo(world_map);
+	tileLayer.addTo(g_worldMap);
 	tileLayer.on('load', 
 			function() {
 		console.log("all visible tiles have been loaded");
@@ -50,13 +53,13 @@ function addTileLayer(){
 }
 
 function addGeoJsonLayer(){
-	
+
 	/* Features in GeoJSON contain a geometry object and additional properties.
 	 * Add vector data to map */
-	geojsonLayer = L.geoJson(worldborders, {
+	g_geoJsonLayer = L.geoJson(worldborders, {
 		style: getBaseStyle,
 		onEachFeature: setEvents
-	}).addTo(world_map);
+	}).addTo(g_worldMap);
 }
 
 function onAddLegend() {
@@ -78,12 +81,53 @@ function onAddLegend() {
 	div.innerHTML = labels.join('<br><br>');
 	return div;
 }
+
 function addLegendControl(){
+	
 	var legend = L.control({position: 'bottomleft'});
 
 	legend.onAdd = onAddLegend;
 
-	legend.addTo(world_map);
+	legend.addTo(g_worldMap);
+}
+
+function addSearchControl(){
+
+	var options = {
+			position: 'topleft',
+			
+			/* Function to display a feature returned by the search, parameters are the feature and an HTML container */
+			showResultFct: resultSearchCallback
+	};
+
+	var searchCtrl = L.control.fuseSearch(options);
+	searchCtrl.addTo(g_worldMap);
+
+	searchCtrl.indexFeatures(worldborders.features, ['name']);
+}
+
+/* Handle the result search at runtime.*/
+function resultSearchCallback(feature, container) {
+    
+	props = feature.properties;
+
+	/* For each country that matches search criterion, display country name as well its status of military courts to civilians. */
+    var name = L.DomUtil.create('b', null, container);
+    name.innerHTML = props.name;
+    container.appendChild(L.DomUtil.create('br', null, container));
+    container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+props.milstatus));
+    
+    /* Make each result item as clickable object, so map can be panned and zoomed according to the clicked country in the result list.*/
+    L.DomUtil.addClass(container, 'clickable');
+    container.onclick = function() {
+        
+        if (window.matchMedia("(max-width:480px)").matches) {
+        	container.hidePanel();
+        	g_worldMap.fitBounds(feature.layerPointer.getBounds());
+        } else {
+        	g_worldMap.fitBounds(feature.layerPointer.getBounds());
+        }
+    };
 }
 
 function getBaseColor(milstatus){
@@ -116,7 +160,7 @@ function getBaseColor(milstatus){
 		/*console.log("Case default");*/
 		geoJsonGeometryColor = "#0000A0";
 	}
-	
+
 	return geoJsonGeometryColor;
 }
 
@@ -163,7 +207,7 @@ function getHighlightColor(milstatus){
 		/*console.log("Case default");*/
 		geoJsonGeometryColor = "#0000FF";
 	}
-	
+
 	return geoJsonGeometryColor;
 }
 
@@ -182,29 +226,35 @@ function highlightFeature(e) {
 		fillOpacity: 0.7,
 		fillColor: getHighlightColor(e.target.feature.properties.milstatus)
 	});
-	
+
 	if (!L.Browser.ie && !L.Browser.opera) {
-        layer.bringToFront();
-    }
+		layer.bringToFront();
+	}
 }
 
 /* A function to reset the colors when a country is not longer 'hovered' */
 function resetHighlight(e) {
-	geojsonLayer.resetStyle(e.target);
+	g_geoJsonLayer.resetStyle(e.target);
 }
 
 /* Zoom to country upon being clicked on any part of its borders. */
 function zoomToFeature(e) {
-	world_map.fitBounds(e.target.getBounds());
+	g_worldMap.fitBounds(e.target.getBounds());
 }
 
 /* Tell Leaflet what functions to call when mousing over and out of a country */
 function setEvents(feature, layer) {
+
+	/*Never ever name feature.layer = layer otherwise leaflet-fussearch will through
+	 * Uncaught TypeError: undefined is not a function */
+	feature.layerPointer = layer;
+
 	layer.on({
 		mouseover	: highlightFeature,
 		mouseout	: resetHighlight,
 		click		: zoomToFeature	
 	});
+
 }
 
 
@@ -212,16 +262,17 @@ function initialize() {
 
 	var mapOptions = getDefaultMapOptions();
 
-	/* create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
-	world_map = new L.map("map-canvas",mapOptions)
-	/*.addControl(L.mapbox.shareControl())*/;
+	/* Create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
+	g_worldMap = new L.map("map-canvas",mapOptions);
 
 	addTileLayer();
 
 	addGeoJsonLayer();
-	
+
 	addLegendControl();
-	
+
+	addSearchControl();
+
 	/* In case Enter key is pressed, zoom to the selected country (if any)*/
 	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
 		if (e.keyCode == 13) {
@@ -258,7 +309,7 @@ function resetMap(){
 	var mapOptions = getDefaultMapOptions();
 
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
-	world_map.setView(mapOptions.center, mapOptions.zoom);
+	g_worldMap.setView(mapOptions.center, mapOptions.zoom);
 
 	/* Reset text field if it holds any name of searched country. */
 	/*document.getElementById("txtSearchStringID").value = "";*/
