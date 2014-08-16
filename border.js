@@ -83,7 +83,7 @@ function onAddLegend() {
 }
 
 function addLegendControl(){
-	
+
 	var legend = L.control({position: 'bottomleft'});
 
 	legend.onAdd = onAddLegend;
@@ -94,10 +94,16 @@ function addLegendControl(){
 function addSearchControl(){
 
 	var options = {
+
 			position: 'topleft',
-			
-			/* Function to display a feature returned by the search, parameters are the feature and an HTML container */
-			showResultFct: resultSearchCallback
+			maxResultLength: 1,
+
+			/* a decimal value indicating at which point the match algorithm gives up. A threshold of 0.0 requires a perfect match,
+			 * a threshold of 1.0 would match anything, default 0.5*/
+			threshold: 0, 
+
+			/* Callback to be invoked after the search result is obtained. It is useful to update your HTML in this function. */
+			searchResultCallback: resultSearchCallback
 	};
 
 	var searchCtrl = L.control.fuseSearch(options);
@@ -108,26 +114,27 @@ function addSearchControl(){
 
 /* Handle the result search at runtime.*/
 function resultSearchCallback(feature, container) {
-    
+
+	//console.log("Inside my defined resultSearchCallback");
 	props = feature.properties;
 
 	/* For each country that matches search criterion, display country name as well its status of military courts to civilians. */
-    var name = L.DomUtil.create('b', null, container);
-    name.innerHTML = props.name;
-    container.appendChild(L.DomUtil.create('br', null, container));
-    container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+props.milstatus));
-    
-    /* Make each result item as clickable object, so map can be panned and zoomed according to the clicked country in the result list.*/
-    L.DomUtil.addClass(container, 'clickable');
+	var name = L.DomUtil.create('b', null, container);
+	name.innerHTML = props.name;
+	container.appendChild(L.DomUtil.create('br', null, container));
+	container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+props.milstatus));
+
+	/* Make each result item as clickable object, so map can be panned and zoomed according to the clicked country in the result list.*/
+	/*L.DomUtil.addClass(container, 'clickable');
     container.onclick = function() {
-        
+
         if (window.matchMedia("(max-width:480px)").matches) {
         	container.hidePanel();
         	g_worldMap.fitBounds(feature.layerPointer.getBounds());
         } else {
         	g_worldMap.fitBounds(feature.layerPointer.getBounds());
         }
-    };
+    };*/
 }
 
 function getBaseColor(milstatus){
@@ -279,29 +286,6 @@ function initialize() {
 			zoomToCountry();
 		}
 	});*/
-}
-
-/* This function is called once user clicks on Search button. */
-function zoomToCountry() {
-
-	console.log("Inside zoomToCountry function");
-	var whereClause;
-	var countriesDropDownObject = document.getElementById('countriesDropDownListID');
-	var selectedCountryName =  countriesDropDownObject.options[countriesDropDownObject.selectedIndex].text;
-	console.log("Before replacement: selectedCountryName var is: %s", selectedCountryName);
-
-	selectedCountryName = selectedCountryName.replace(/'/g, "\\'");
-	console.log("After replacement: selectedCountryName var is: %s", selectedCountryName);
-
-	/* Handle corner case if user did not enter any country name and hits search button, by simply reseting the map.
-	 * Otherwise, geocode required country name. */
-	if(selectedCountryName == '--Select Country--'){
-		resetMap();
-	}else{
-
-		whereClause = "Name = \'"+ selectedCountryName+"\'";
-		console.log("whereClause var is: %s", whereClause);
-	}
 }
 
 /* This function is called once user clicks on reset button. */
