@@ -6,6 +6,7 @@ var g_worldMap;
 var g_geoJsonLayer;
 var g_minZoomLevel = 2;
 var g_maz_zoomLevel = 7;
+var g_lastCountryLayer;
 
 function getDefaultMapOptions(){
 
@@ -135,6 +136,24 @@ function resultSearchCallback(feature, container) {
         	g_worldMap.fitBounds(feature.layerPointer.getBounds());
         }
     };*/
+	
+	/* Reset colors of all countries by removing GeoJson layer */
+	hideLayer(g_geoJsonLayer);
+	
+	/* Reset color of the last country that highlighted as search result item*/
+	hideLayer(g_lastCountryLayer);
+	
+	/* Update last country layer so that it could be removed in the next search for another country.*/
+	g_lastCountryLayer = feature.layerPointer;
+	
+	/* Finally add the chosen country to the map*/
+	g_worldMap.addLayer(g_lastCountryLayer);
+}
+
+function hideLayer(layer){
+	if(g_worldMap.hasLayer(layer)){
+		g_worldMap.removeLayer(layer);
+	}
 }
 
 function getBaseColor(milstatus){
