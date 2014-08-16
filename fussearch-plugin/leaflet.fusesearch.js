@@ -335,9 +335,9 @@ L.Control.FuseSearch = L.Control.extend({
         };
 
         this._input.onchange = function(evt) {
-        	console.log("dropdown menu change event");
+        	//console.log("dropdown menu change event");
             var searchString = evt.currentTarget.value;
-            console.log("Search string is:" + searchString);
+            //console.log("Search string is:" + searchString);
             _this.searchFeatures(map,searchString);
         };
         
