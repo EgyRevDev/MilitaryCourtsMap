@@ -113,6 +113,23 @@ function addSearchControl(){
 	searchCtrl.indexFeatures(worldborders.features, ['name']);
 }
 
+function addResetControl (){
+	
+	var options = {position:'topleft' , title: 'Reset Map'};
+	var resetCtrl = L.control(options);
+
+	resetCtrl.onAdd = function (map) {
+		var butt = this._resetBtn = L.DomUtil.create('a', 'resetCtrl'); // create a div link with a class "resetCtrl"
+		butt.href = '#';
+		butt.title = this.options.title;
+	    
+		butt.onclick = resetMap;
+	    return butt;
+	};
+	
+	resetCtrl.addTo(g_worldMap);
+}
+
 /* Handle the result search at runtime.*/
 function resultSearchCallback(feature, container) {
 
@@ -297,14 +314,9 @@ function initialize() {
 
 	addLegendControl();
 
+	addResetControl();
+	
 	addSearchControl();
-
-	/* In case Enter key is pressed, zoom to the selected country (if any)*/
-	/*google.maps.event.addDomListener(window, 'keypress',function(e) {
-		if (e.keyCode == 13) {
-			zoomToCountry();
-		}
-	});*/
 }
 
 /* This function is called once user clicks on reset button. */
@@ -313,10 +325,22 @@ function resetMap(){
 
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
 	g_worldMap.setView(mapOptions.center, mapOptions.zoom);
+	g_worldMap.addLayer(g_geoJsonLayer);
 
 	/* Reset text field if it holds any name of searched country. */
-	/*document.getElementById("txtSearchStringID").value = "";*/
 	document.getElementById("countriesDropDownListID").value = "--Select Country--";
+	
+	/* Clear the last search result*/
+	clearSearchResult();
+	//$(".result-item").remove();
+}
+
+function clearSearchResult(){
+	removeElementById("resultItemID");
+}
+
+function removeElementById(id){
+	return (elem=document.getElementById(id)).parentNode.removeChild(elem);
 }
 
 function isEmpty(a_string){

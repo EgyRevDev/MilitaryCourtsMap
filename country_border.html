@@ -52,16 +52,24 @@ body {
 	padding: 0 5px;
 	color: #fff;
 }
+
+.resetCtrl {
+    box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+    background: #000;
+    border-radius: 5px;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
+    background-image: url(./icons/reset.png);
+    display: block;
+    width: 36px;
+    height: 36px;
+}
 </style>
 
 
 </head>
 
 <body>
-	<div style="margin-top: 10px;">
-		<input type="reset" onclick="resetMap()" value="Reset">
-	</div>
-
 	<div id="map-canvas"></div>
 
 	<script type="text/javascript"

@@ -1,14 +1,14 @@
 
 .leaflet-fusesearch-control {
     box-shadow: 0 1px 5px rgba(0,0,0,0.4);
-    background: #fff;
+    background: #000;
     border-radius: 5px;
 }
 
 .leaflet-fusesearch-control .button {
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    background-image: url(../images/search.png);
+    background-image: url(../images/search_v2.png);
     display: block;
     width: 36px;
     height: 36px;
@@ -20,7 +20,7 @@
 
 .leaflet-fusesearch-panel {
     position: absolute;
-    height: 100%;
+    height: 65%;
     width: 350px;
     
     z-index: -1;
@@ -34,6 +34,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     padding: 10px;
+    margin-top:100px;
 }
 
 .leaflet-fusesearch-panel .content {
