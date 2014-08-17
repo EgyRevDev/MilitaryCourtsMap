@@ -8,7 +8,7 @@
 .leaflet-fusesearch-control .button {
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    background-image: url(../images/search_v2.png);
+    background-image: url(../../../icons/search.png);
     display: block;
     width: 36px;
     height: 36px;
