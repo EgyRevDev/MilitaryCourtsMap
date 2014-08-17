@@ -327,7 +327,7 @@ L.Control.FuseSearch = L.Control.extend({
 			<option value="Zimbabwe">Zimbabwe</option>  \
 ';
         
-        this._input.id="countriesDropDownListID"
+        this._input.id="countriesDropDownListID";
         //this._input.maxLength = 30;
         //this._input.placeholder = this.options.placeholder;
         this._input.onkeyup = function(evt) {
@@ -485,7 +485,7 @@ L.Control.FuseSearch = L.Control.extend({
         
         // Create a container for the result list to be accessed by the user from his defined callback function.
         var resultItem = L.DomUtil.create('p', 'result-item', resultList);
-        resultItem.id="resultItemID"
+        resultItem.id="resultItemID";
         this.options.searchResultCallback(feature, resultItem);
     },
     
