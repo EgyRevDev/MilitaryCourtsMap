@@ -210,7 +210,7 @@
 	}
 .leaflet-bar a,
 .leaflet-bar a:hover {
-	background-color: #fff;
+	background-color: #000;
 	border-bottom: 1px solid #ccc;
 	width: 26px;
 	height: 26px;
@@ -227,7 +227,7 @@
 	display: block;
 	}
 .leaflet-bar a:hover {
-	background-color: #f4f4f4;
+	background-color: #ff0;
 	}
 .leaflet-bar a:first-child {
 	border-top-left-radius: 4px;
@@ -240,7 +240,7 @@
 	}
 .leaflet-bar a.leaflet-disabled {
 	cursor: default;
-	background-color: #f4f4f4;
+	background-color: #f00;
 	color: #bbb;
 	}
 
@@ -252,7 +252,7 @@
 
 
 /* zoom control */
-
+/* 
 .leaflet-control-zoom-in,
 .leaflet-control-zoom-out {
 	font: bold 18px 'Lucida Console', Monaco, monospace;
@@ -268,7 +268,7 @@
 .leaflet-touch .leaflet-control-zoom-out {
 	font-size: 24px;
 	}
-
+ */
 
 /* layers control */
 

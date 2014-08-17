@@ -8,10 +8,10 @@
 .leaflet-fusesearch-control .button {
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    background-image: url(../../../icons/search.png);
+    background-image: url(../../../icons/search_medium.png);
     display: block;
-    width: 36px;
-    height: 36px;
+    width: 26px;
+    height: 26px;
 }
 .leaflet-touch .leaflet-fusesearch-control .button {
     width: 44px;
