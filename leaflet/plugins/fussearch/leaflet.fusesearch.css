@@ -13,6 +13,10 @@
     width: 26px;
     height: 26px;
 }
+
+.leaflet-fusesearch-control .button:hover{
+    background-color: #ff0;
+}
 .leaflet-touch .leaflet-fusesearch-control .button {
     width: 44px;
     height: 44px;
