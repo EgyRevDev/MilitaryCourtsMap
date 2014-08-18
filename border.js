@@ -2,11 +2,30 @@
  * 
  */
 
+/* Declare map and tile references. */
 var g_worldMap;
-var g_geoJsonLayer;
+var g_tileLayer;
+
+/* Declare Layer Groups of different military courts to civilians. */
+var g_PermittedByConstLayerGroup;
+var g_BannedByConstLayerGroup;
+var g_PermittedByLawLayerGroup;
+var g_BannedByLawLayerGroup;
+var g_UnkwonLayerGroup;
+
+/* Declare GeoJson layers of different countries according to their military courts to civilians. */
+var g_PermittedByConstStatesGeoJsonLayer;
+var g_BannedByConstStatesGeoJsonLayer;
+var g_PermittedByLawStatesGeoJsonLayer;
+var g_BannedByLawStatesGeoJsonLayer;
+var g_UnkwonStatesGeoJsonLayer;
+
+/* Define common values for tile options as well as map options. */
 var g_minZoomLevel = 2;
 var g_maz_zoomLevel = 7;
-var g_lastCountryLayer;
+
+/* Declare last country geojson layer that has been loaded after performing search*/
+var g_lastCountryGeoJsonLayer;
 
 function getDefaultMapOptions(){
 
@@ -18,7 +37,13 @@ function getDefaultMapOptions(){
 			zoom	: intial_zoom_level,
 			center	: initial_center,
 			minZoom	: g_minZoomLevel,
-			maxZoom	: g_maz_zoomLevel
+			maxZoom	: g_maz_zoomLevel,
+			layers	: [g_tileLayer, 
+			      	   g_PermittedByConstLayerGroup , 
+			      	   g_BannedByConstLayerGroup , 
+			      	   g_PermittedByLawLayerGroup , 
+			      	   g_BannedByLawLayerGroup,
+			      	   g_UnkwonLayerGroup]
 	};
 
 	return mapOptions;
@@ -37,30 +62,51 @@ function getTileOptions(){
 	return tileOptions;
 }
 
-function addTileLayer(){
+function createTileLayer(){
 	var map_id='wshowair.xu7bvs4i';
 	var tile_url = 'https://{s}.tiles.mapbox.com/v3/' + 
 	map_id +
 	'/{z}/{x}/{y}.png';
 
 	var tileOptions = getTileOptions();
-	var tileLayer = L.tileLayer(tile_url, tileOptions);
+	g_tileLayer = L.tileLayer(tile_url, tileOptions);
 
-	tileLayer.addTo(g_worldMap);
-	tileLayer.on('load', 
+	//tileLayer.addTo(g_worldMap);
+	g_tileLayer.on('load', 
 			function() {
 		console.log("all visible tiles have been loaded");
 	});
 }
 
-function addGeoJsonLayer(){
+function addGeoJsonLayersToLayerGroups(){
 
-	/* Features in GeoJSON contain a geometry object and additional properties.
-	 * Add vector data to map */
-	g_geoJsonLayer = L.geoJson(worldborders, {
-		style: getBaseStyle,
+	/* Features in GeoJSON contain a geometry object and additional properties. */
+	
+	/* Add geojson layer to the corresponding layer group. */
+	g_PermittedByConstStatesGeoJsonLayer = L.geoJson(countries_pbc, {
+		style: getBaseStyle("PermittedByConst"),
 		onEachFeature: setEvents
-	}).addTo(g_worldMap);
+	}).addTo(g_PermittedByConstLayerGroup);
+	
+	g_BannedByConstStatesGeoJsonLayer = L.geoJson(countries_bbc, {
+		style: getBaseStyle("BannedByConst"),
+		onEachFeature: setEvents
+	}).addTo(g_BannedByConstLayerGroup);
+	
+	g_PermittedByLawStatesGeoJsonLayer = L.geoJson(countries_pbl, {
+		style: getBaseStyle("PermittedByLaw"),
+		onEachFeature: setEvents
+	}).addTo(g_PermittedByLawLayerGroup);
+	
+	g_BannedByLawStatesGeoJsonLayer = L.geoJson(countries_bbl, {
+		style: getBaseStyle("BannedByLaw"),
+		onEachFeature: setEvents
+	}).addTo(g_BannedByLawLayerGroup);
+	
+	g_UnkwonStatesGeoJsonLayer = L.geoJson(countries_unkw, {
+		style: getBaseStyle("Unkwon"),
+		onEachFeature: setEvents
+	}).addTo(g_UnkwonLayerGroup);
 }
 
 function onAddLegend() {
@@ -110,7 +156,23 @@ function addSearchControl(){
 	var searchCtrl = L.control.fuseSearch(options);
 	searchCtrl.addTo(g_worldMap);
 
-	searchCtrl.indexFeatures(worldborders.features, ['name']);
+	var worldCountriesMergedFeatures = mergeGeoJsonFeatures();
+
+	searchCtrl.indexFeatures(worldCountriesMergedFeatures, ['name']);
+}
+
+function mergeGeoJsonFeatures(){
+	
+	var mergedArray;
+	
+	var arr1 = countries_pbc.features;
+	var arr2 = countries_pbl.features;
+	var arr3 = countries_bbc.features;
+	var arr4 = countries_bbl.features;
+	var arr5 = countries_unkw.features;
+	
+	mergedArray = arr1.concat(arr2).concat(arr3).concat(arr4).concat(arr5);
+	return mergedArray;
 }
 
 function addResetControl (){
@@ -140,7 +202,7 @@ function resultSearchCallback(feature, container) {
 	var name = L.DomUtil.create('b', null, container);
 	name.innerHTML = props.name;
 	container.appendChild(L.DomUtil.create('br', null, container));
-	container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+props.milstatus));
+	container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+getRelatedMilitaryStatus(feature.layerPointer)));
 
 	/* Make each result item as clickable object, so map can be panned and zoomed according to the clicked country in the result list.*/
 	/*L.DomUtil.addClass(container, 'clickable');
@@ -155,16 +217,16 @@ function resultSearchCallback(feature, container) {
     };*/
 	
 	/* Reset colors of all countries by removing GeoJson layer */
-	hideLayer(g_geoJsonLayer);
+	removeLayerGroups();
 	
 	/* Reset color of the last country that highlighted as search result item*/
-	hideLayer(g_lastCountryLayer);
+	hideLayer(g_lastCountryGeoJsonLayer);
 	
 	/* Update last country layer so that it could be removed in the next search for another country.*/
-	g_lastCountryLayer = feature.layerPointer;
+	g_lastCountryGeoJsonLayer = feature.layerPointer;
 	
 	/* Finally add the chosen country to the map*/
-	g_worldMap.addLayer(g_lastCountryLayer);
+	g_worldMap.addLayer(g_lastCountryGeoJsonLayer);
 }
 
 function hideLayer(layer){
@@ -209,14 +271,14 @@ function getBaseColor(milstatus){
 
 /* Set base style of GeoJson vector data as a function of current Military Courts to Civilians state.
  * Note that Features in GeoJSON contain a geometry object and additional properties.*/
-function getBaseStyle(feature) {
+function getBaseStyle(milstatus) {
 
 	return {
 		color: "#000000", 	/* Stroke color */
 		weight: 0.2, 		/* Stroke width in pixels. */
 		opacity: 1, 		/* Stroke opacity.*/
 		fillOpacity: 0.6,   /* Fill color of geometry. */
-		fillColor: getBaseColor(feature.properties.milstatus) /* Fill opacity of geometry. */
+		fillColor: getBaseColor(milstatus) /* Fill opacity of geometry. */
 	};
 }
 
@@ -261,13 +323,16 @@ function highlightFeature(e) {
 	/*var countryName = e.target.feature.properties.name;
 	console.log(countryName);*/
 	var layer = e.target;
+
+	var militaryStatus = getRelatedMilitaryStatus(layer);
+	
 	layer.setStyle({
 		color: '#FFFFFF',
 		weight: 1,
 		opacity: 1,
 		/*dashArray: '3',*/
 		fillOpacity: 0.7,
-		fillColor: getHighlightColor(e.target.feature.properties.milstatus)
+		fillColor: getHighlightColor(militaryStatus)
 	});
 
 	if (!L.Browser.ie && !L.Browser.opera) {
@@ -277,7 +342,44 @@ function highlightFeature(e) {
 
 /* A function to reset the colors when a country is not longer 'hovered' */
 function resetHighlight(e) {
-	g_geoJsonLayer.resetStyle(e.target);
+
+	var geoJsonLayer = getRelatedGeoJsonLayer(e.target);
+	geoJsonLayer.resetStyle(e.target);
+}
+
+function getRelatedMilitaryStatus(layer){
+	
+	var militaryStatus;
+	
+	if (g_PermittedByConstStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "PermittedByConst";
+	else if  (g_BannedByConstStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "BannedByConst";
+	else if  (g_PermittedByLawStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "PermittedByLaw";
+	else if  (g_BannedByLawStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "BannedByLaw";
+	else if  (g_UnkwonStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "Unkwon";
+	
+	return militaryStatus;	
+}
+
+function getRelatedGeoJsonLayer(layer){
+	var geoJsonLayer;
+	
+	if (g_PermittedByConstStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_PermittedByConstStatesGeoJsonLayer;
+	else if  (g_BannedByConstStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_BannedByConstStatesGeoJsonLayer;
+	else if  (g_PermittedByLawStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_PermittedByLawStatesGeoJsonLayer;
+	else if  (g_BannedByLawStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_BannedByLawStatesGeoJsonLayer;
+	else if  (g_UnkwonStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_UnkwonStatesGeoJsonLayer;
+	
+	return geoJsonLayer;
 }
 
 /* Zoom to country upon being clicked on any part of its borders. */
@@ -302,21 +404,72 @@ function setEvents(feature, layer) {
 
 
 function initialize() {
+	
+	createTileLayer();
+	
+	createLayerGroups();
+
+	createMap();
+	
+	addLegendControl();
+
+	addResetControl();
+	
+	addSearchControl();
+}
+
+function createMap(){
 
 	var mapOptions = getDefaultMapOptions();
 
 	/* Create a JavaScript "map" object, passing it the div element named "map-canvas" and the map properties. */
 	g_worldMap = new L.map("map-canvas",mapOptions);
 
-	addTileLayer();
+	var overlays = {
+			"Permitted By Const": g_PermittedByConstLayerGroup,
+			"Banned By Const"	: g_BannedByConstLayerGroup,
+			"Permitted By Law"	: g_PermittedByLawLayerGroup,
+			"Banned By Law"		: g_BannedByLawLayerGroup,
+			"Unkwon"			: g_UnkwonLayerGroup
+	};
 
-	addGeoJsonLayer();
+	L.control.layers(null, overlays).addTo(g_worldMap);
+}
 
-	addLegendControl();
-
-	addResetControl();
+function createLayerGroups(){
 	
-	addSearchControl();
+	g_PermittedByConstLayerGroup 	=  	new L.LayerGroup();
+	g_BannedByConstLayerGroup		=  	new L.LayerGroup();
+	g_PermittedByLawLayerGroup		=  	new L.LayerGroup();
+	g_BannedByLawLayerGroup			=  	new L.LayerGroup();
+	g_UnkwonLayerGroup				=	new L.LayerGroup();
+	
+	addGeoJsonLayersToLayerGroups();
+}
+
+function addLayerGroups(){
+	
+	g_PermittedByConstLayerGroup.addLayer	(g_PermittedByConstStatesGeoJsonLayer);
+	g_BannedByConstLayerGroup.addLayer		(g_BannedByConstStatesGeoJsonLayer);
+	g_PermittedByLawLayerGroup.addLayer		(g_PermittedByLawStatesGeoJsonLayer);
+	g_BannedByLawLayerGroup.addLayer		(g_BannedByLawStatesGeoJsonLayer);
+	g_UnkwonLayerGroup.addLayer				(g_UnkwonStatesGeoJsonLayer);
+
+	/* In case user removes a layer group, it must be reloaded upon reset is clicked. */
+	g_PermittedByConstLayerGroup.addTo(g_worldMap);
+	g_BannedByConstLayerGroup.addTo(g_worldMap);
+	g_PermittedByLawLayerGroup.addTo(g_worldMap);
+	g_BannedByLawLayerGroup.addTo(g_worldMap);
+	g_UnkwonLayerGroup.addTo(g_worldMap);
+}
+
+function removeLayerGroups(){
+	
+	g_PermittedByConstLayerGroup.clearLayers();
+	g_BannedByConstLayerGroup.clearLayers();
+	g_PermittedByLawLayerGroup.clearLayers();
+	g_BannedByLawLayerGroup.clearLayers();
+	g_UnkwonLayerGroup.clearLayers();
 }
 
 /* This function is called once user clicks on reset button. */
@@ -325,7 +478,8 @@ function resetMap(){
 
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
 	g_worldMap.setView(mapOptions.center, mapOptions.zoom);
-	g_worldMap.addLayer(g_geoJsonLayer);
+	
+	addLayerGroups();
 
 	/* Reset text field if it holds any name of searched country. */
 	document.getElementById("countriesDropDownListID").value = "--Select Country--";
