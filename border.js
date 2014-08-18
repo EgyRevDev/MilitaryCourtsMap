@@ -449,13 +449,6 @@ function createLayerGroups(){
 
 function addLayerGroups(){
 	
-	g_PermittedByConstLayerGroup.addLayer	(g_PermittedByConstStatesGeoJsonLayer);
-	g_BannedByConstLayerGroup.addLayer		(g_BannedByConstStatesGeoJsonLayer);
-	g_PermittedByLawLayerGroup.addLayer		(g_PermittedByLawStatesGeoJsonLayer);
-	g_BannedByLawLayerGroup.addLayer		(g_BannedByLawStatesGeoJsonLayer);
-	g_UnkwonLayerGroup.addLayer				(g_UnkwonStatesGeoJsonLayer);
-
-	/* In case user removes a layer group, it must be reloaded upon reset is clicked. */
 	g_PermittedByConstLayerGroup.addTo(g_worldMap);
 	g_BannedByConstLayerGroup.addTo(g_worldMap);
 	g_PermittedByLawLayerGroup.addTo(g_worldMap);
@@ -465,11 +458,12 @@ function addLayerGroups(){
 
 function removeLayerGroups(){
 	
-	g_PermittedByConstLayerGroup.clearLayers();
-	g_BannedByConstLayerGroup.clearLayers();
-	g_PermittedByLawLayerGroup.clearLayers();
-	g_BannedByLawLayerGroup.clearLayers();
-	g_UnkwonLayerGroup.clearLayers();
+	g_worldMap.removeLayer(g_PermittedByConstLayerGroup);
+	g_worldMap.removeLayer(g_BannedByConstLayerGroup);
+	g_worldMap.removeLayer(g_PermittedByLawLayerGroup);
+	g_worldMap.removeLayer(g_BannedByLawLayerGroup);
+	g_worldMap.removeLayer(g_UnkwonLayerGroup);
+	
 }
 
 /* This function is called once user clicks on reset button. */
@@ -479,6 +473,7 @@ function resetMap(){
 	/* Reset map to initial center , zoom level and colorize all world of countries again.*/
 	g_worldMap.setView(mapOptions.center, mapOptions.zoom);
 	
+	/* In case user removes any layer group, it must be reloaded upon reset is clicked. */
 	addLayerGroups();
 
 	/* Reset text field if it holds any name of searched country. */
