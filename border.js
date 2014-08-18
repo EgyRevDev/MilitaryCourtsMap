@@ -494,7 +494,8 @@ function clearSearchResult(){
 }
 
 function removeElementById(id){
-	return (elem=document.getElementById(id)).parentNode.removeChild(elem);
+	var elem=document.getElementById(id);
+	elem !== null?  elem.parentNode.removeChild(elem): null;
 }
 
 function isEmpty(a_string){
