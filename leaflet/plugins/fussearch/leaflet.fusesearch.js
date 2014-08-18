@@ -449,7 +449,7 @@ L.Control.FuseSearch = L.Control.extend({
     
     searchFeatures: function(map,string) {
         
-    	console.log("Inside searchFeatures: pattern is: "+string);
+    	//console.log("Inside searchFeatures: pattern is: "+string);
     	var result = this._fuseIndex.search(string);
 
         //console.log(result[0]._feature.layerPointer);
