@@ -376,10 +376,10 @@ L.Control.FuseSearch = L.Control.extend({
         var that = this;
         var input = this._input;
         this._map.addEventListener('overlayadd', function() {
-            that.searchFeatures(input.value);
+            //that.searchFeatures(input.value);
         });
         this._map.addEventListener('overlayremove', function() {
-            that.searchFeatures(input.value);
+            //that.searchFeatures(input.value);
         });
     },
     
@@ -449,6 +449,7 @@ L.Control.FuseSearch = L.Control.extend({
     
     searchFeatures: function(map,string) {
         
+    	console.log("Inside searchFeatures: pattern is: "+string);
     	var result = this._fuseIndex.search(string);
 
         //console.log(result[0]._feature.layerPointer);
