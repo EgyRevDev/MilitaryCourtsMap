@@ -198,9 +198,21 @@ function resultSearchCallback(feature, container) {
 	//console.log("Inside my defined resultSearchCallback");
 	props = feature.properties;
 
+	container.appendChild(L.DomUtil.create('br', null, container));
+	
 	/* For each country that matches search criterion, display country name as well its status of military courts to civilians. */
 	var name = L.DomUtil.create('b', null, container);
 	name.innerHTML = props.name;
+	container.appendChild(L.DomUtil.create('br', null, container));
+	
+	var image = L.DomUtil.create('img', 'flag' , container);
+	image.id  = "flagImageID";
+	
+	/* Set image src url after getting flag url from fusion table.*/
+	getFlagURL(props.name, container);
+	
+	image.alt = "flag of " + props.name;
+	container.appendChild(L.DomUtil.create('br', null, container));
 	container.appendChild(L.DomUtil.create('br', null, container));
 	container.appendChild(document.createTextNode('Staus of Military Courts to Civilians: '+getRelatedMilitaryStatus(feature.layerPointer)));
 
@@ -227,6 +239,34 @@ function resultSearchCallback(feature, container) {
 	
 	/* Finally add the chosen country to the map*/
 	g_worldMap.addLayer(g_lastCountryGeoJsonLayer);
+}
+
+function getFlagURL(countryName, container){
+	//https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20flag%20FROM%201jAwn5xjU3wgnI_-_bJ5JPl_qSGqWdU82LnmLgoQG%20WHERE%20name%20=%20%27Algeria%27&key=AIzaSyBb2ywtpvLm6YO5YnrYvjk6u83FRN-YKkU
+	
+	/*Fusion Table information*/
+	var fusionTableID = '1jAwn5xjU3wgnI_-_bJ5JPl_qSGqWdU82LnmLgoQG' ;
+	var fusionTablePublicKey = 'AIzaSyBb2ywtpvLm6YO5YnrYvjk6u83FRN-YKkU';
+	
+	var script = document.createElement('script');
+    var url = ['https://www.googleapis.com/fusiontables/v1/query?'];
+    url.push('sql=');
+    var query = 'SELECT flag FROM ' +
+    			fusionTableID +
+    			" WHERE name='"+ countryName +"'";
+    var encodedQuery = encodeURIComponent(query);
+    url.push(encodedQuery);
+    url.push('&callback=sqlQueryCallback');
+    url.push('&key='+ fusionTablePublicKey);
+    script.src = url.join('');
+    
+    container.appendChild(script);
+}
+
+function sqlQueryCallback(dataResponse){
+	var rows = dataResponse['rows'];
+	var flagURL = rows[0][0];
+	document.getElementById("flagImageID").src = flagURL;
 }
 
 function hideLayer(layer){
