@@ -12,6 +12,7 @@ var g_BannedByConstLayerGroup;
 var g_PermittedByLawLayerGroup;
 var g_BannedByLawLayerGroup;
 var g_UnkwonLayerGroup;
+var g_UndefinedLayerGroup;
 
 /* Declare GeoJson layers of different countries according to their military courts to civilians. */
 var g_PermittedByConstStatesGeoJsonLayer;
@@ -19,6 +20,7 @@ var g_BannedByConstStatesGeoJsonLayer;
 var g_PermittedByLawStatesGeoJsonLayer;
 var g_BannedByLawStatesGeoJsonLayer;
 var g_UnkwonStatesGeoJsonLayer;
+var g_UndefinedStatesGeoJsonLayer;
 
 /* Define common values for tile options as well as map options. */
 var g_minZoomLevel = 2;
@@ -43,7 +45,8 @@ function getDefaultMapOptions(){
 			      	   g_BannedByConstLayerGroup , 
 			      	   g_PermittedByLawLayerGroup , 
 			      	   g_BannedByLawLayerGroup,
-			      	   g_UnkwonLayerGroup]
+			      	   g_UnkwonLayerGroup,
+			      	   g_UndefinedLayerGroup]
 	};
 
 	return mapOptions;
@@ -107,6 +110,11 @@ function addGeoJsonLayersToLayerGroups(){
 		style: getBaseStyle("Unkwon"),
 		onEachFeature: setEvents
 	}).addTo(g_UnkwonLayerGroup);
+	
+	g_UndefinedStatesGeoJsonLayer = L.geoJson(countries_undef, {
+		style: getBaseStyle("Undefined"),
+		onEachFeature: setEvents
+	}).addTo(g_UndefinedLayerGroup);
 }
 
 function onAddLegend() {
@@ -170,8 +178,9 @@ function mergeGeoJsonFeatures(){
 	var arr3 = countries_bbc.features;
 	var arr4 = countries_bbl.features;
 	var arr5 = countries_unkw.features;
+	var arr6 = countries_undef.features;
 	
-	mergedArray = arr1.concat(arr2).concat(arr3).concat(arr4).concat(arr5);
+	mergedArray = arr1.concat(arr2).concat(arr3).concat(arr4).concat(arr5).concat(arr6);
 	return mergedArray;
 }
 
@@ -401,7 +410,8 @@ function getRelatedMilitaryStatus(layer){
 		militaryStatus = "BannedByLaw";
 	else if  (g_UnkwonStatesGeoJsonLayer.hasLayer(layer))
 		militaryStatus = "Unkwon";
-	
+	else if  (g_UndefinedStatesGeoJsonLayer.hasLayer(layer))
+		militaryStatus = "Undefined";
 	return militaryStatus;	
 }
 
@@ -418,7 +428,8 @@ function getRelatedGeoJsonLayer(layer){
 		geoJsonLayer = g_BannedByLawStatesGeoJsonLayer;
 	else if  (g_UnkwonStatesGeoJsonLayer.hasLayer(layer))
 		geoJsonLayer = g_UnkwonStatesGeoJsonLayer;
-	
+	else if  (g_UndefinedStatesGeoJsonLayer.hasLayer(layer))
+		geoJsonLayer = g_UndefinedStatesGeoJsonLayer;
 	return geoJsonLayer;
 }
 
@@ -470,7 +481,8 @@ function createMap(){
 			"Banned By Const"	: g_BannedByConstLayerGroup,
 			"Permitted By Law"	: g_PermittedByLawLayerGroup,
 			"Banned By Law"		: g_BannedByLawLayerGroup,
-			"Unkwon"			: g_UnkwonLayerGroup
+			"Unkwon"			: g_UnkwonLayerGroup,
+			"Non UN States"		: g_UndefinedLayerGroup
 	};
 
 	L.control.layers(null, overlays).addTo(g_worldMap);
@@ -483,6 +495,7 @@ function createLayerGroups(){
 	g_PermittedByLawLayerGroup		=  	new L.LayerGroup();
 	g_BannedByLawLayerGroup			=  	new L.LayerGroup();
 	g_UnkwonLayerGroup				=	new L.LayerGroup();
+	g_UndefinedLayerGroup			= 	new L.LayerGroup();
 	
 	addGeoJsonLayersToLayerGroups();
 }
@@ -494,6 +507,7 @@ function addLayerGroups(){
 	g_PermittedByLawLayerGroup.addTo(g_worldMap);
 	g_BannedByLawLayerGroup.addTo(g_worldMap);
 	g_UnkwonLayerGroup.addTo(g_worldMap);
+	g_UndefinedLayerGroup.addTo(g_worldMap);
 }
 
 function removeLayerGroups(){
@@ -503,6 +517,7 @@ function removeLayerGroups(){
 	g_worldMap.removeLayer(g_PermittedByLawLayerGroup);
 	g_worldMap.removeLayer(g_BannedByLawLayerGroup);
 	g_worldMap.removeLayer(g_UnkwonLayerGroup);
+	g_worldMap.removeLayer(g_UndefinedLayerGroup);
 	
 }
 
