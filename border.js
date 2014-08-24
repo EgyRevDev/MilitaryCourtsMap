@@ -63,7 +63,7 @@ function getTileOptions(){
 }
 
 function createTileLayer(){
-	var map_id='wshowair.xu7bvs4i';
+	var map_id='wshowair.nk8uayvi';
 	var tile_url = 'https://{s}.tiles.mapbox.com/v3/' + 
 	map_id +
 	'/{z}/{x}/{y}.png';
@@ -245,7 +245,7 @@ function getFlagURL(countryName, container){
 	//https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20flag%20FROM%201jAwn5xjU3wgnI_-_bJ5JPl_qSGqWdU82LnmLgoQG%20WHERE%20name%20=%20%27Algeria%27&key=AIzaSyBb2ywtpvLm6YO5YnrYvjk6u83FRN-YKkU
 	
 	/*Fusion Table information*/
-	var fusionTableID = '1jAwn5xjU3wgnI_-_bJ5JPl_qSGqWdU82LnmLgoQG' ;
+	var fusionTableID = '1RTjBTSNLORaqdqCoCXf51JxpsUUh_NGffnrPRqP_' ;
 	var fusionTablePublicKey = 'AIzaSyBb2ywtpvLm6YO5YnrYvjk6u83FRN-YKkU';
 	
 	var script = document.createElement('script');
